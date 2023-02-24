@@ -7,11 +7,6 @@ import * as dotenv from "dotenv";
 dotenv.config();
 
 const userAgent = "Region Archiver/0.1.0 (by: Esfalsa)";
-const imgbbKey = process.env["IMGBB_KEY"];
-
-if (!imgbbKey) {
-  throw new Error("No imgBB key found.");
-}
 
 const { body } = await request(
   "https://esfalsa.github.io/puree/regions.xml.gz",
@@ -51,7 +46,7 @@ pipeline(
     filter: ({ name, delegateAuth }) =>
       Boolean(delegateAuth?.includes("X") && !passworded.includes(name)),
   }),
-  new RegionSaver({ userAgent, imgbbKey }),
+  new RegionSaver({ userAgent }),
   {
     signal: timer.signal,
   }

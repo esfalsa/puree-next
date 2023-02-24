@@ -2,12 +2,11 @@ import { Writable, WritableOptions } from "node:stream";
 import PQueue from "p-queue";
 import fs from "fs-extra";
 import _ from "lodash";
-import { FormData, request } from "undici";
+import { request } from "undici";
 
 export class RegionSaver extends Writable {
   date = Math.floor(Date.now() / 1000); // get Unix time, in seconds
   userAgent: string;
-  imgbbKey: string;
 
   queue = new PQueue({
     interval: 6000,
@@ -15,12 +14,12 @@ export class RegionSaver extends Writable {
     concurrency: 1,
   });
 
-  constructor(
-    options: WritableOptions & { userAgent: string; imgbbKey: string }
-  ) {
+  constructor(options: WritableOptions & { userAgent: string }) {
     super({ ...options, objectMode: true });
     this.userAgent = options.userAgent;
-    this.imgbbKey = options.imgbbKey;
+
+    fs.ensureDirSync("./flags");
+    fs.ensureDirSync("./banners/uploads");
   }
 
   override async _write(
@@ -59,21 +58,27 @@ export class RegionSaver extends Writable {
       time: this.date,
       flag:
         data.flagId && data.flagId !== lastData.flagId
-          ? await this.#getFlag(data.flagId)
+          ? (await this.#getFlag(data.flagId)) || null
           : null,
       banner:
         data.bannerId && data.bannerId !== lastData.bannerId
-          ? await this.#getBanner(data.bannerId)
+          ? (await this.#getBanner(data.bannerId)) || null
           : null,
     };
+
+    // if (newData.flagId && data.flagId !== lastData.flagId) {
+    //   await this.#saveFlag(newData.flagId);
+    // }
+
+    // if (newData.bannerId && data.bannerId !== lastData.bannerId) {
+    //   await this.#saveBanner(newData.bannerId);
+    // }
 
     await fs.outputJSON(filename, [...currentData.slice(-3), newData]);
   }
 
   async #getFlag(id: string) {
     return await this.queue.add(async (): Promise<string | null> => {
-      const form = new FormData();
-
       const downloadResponse = await request(
         new URL(
           id,
@@ -90,17 +95,9 @@ export class RegionSaver extends Writable {
         return null;
       }
 
-      form.append("image", await downloadResponse.body.blob(), `Flag ${id}`);
+      downloadResponse.body.pipe(fs.createWriteStream(`./flags/${id}`));
 
-      const uploadResponse = await request("https://api.imgbb.com/1/upload", {
-        query: {
-          key: this.imgbbKey,
-        },
-        method: "POST",
-        body: form,
-      }).then(({ body }) => body.json());
-
-      return uploadResponse.data.url;
+      return `https://esfalsa.github.io/puree-next/flags/${id}`;
     });
   }
 
@@ -110,8 +107,6 @@ export class RegionSaver extends Writable {
     }
 
     return await this.queue.add(async (): Promise<string | null> => {
-      const form = new FormData();
-
       const downloadResponse = await request(
         new URL(id, "https://www.nationstates.net/images/rbanners/"),
         {
@@ -125,18 +120,9 @@ export class RegionSaver extends Writable {
         return null;
       }
 
-      form.append("image", await downloadResponse.body.blob(), `Banner ${id}`);
+      downloadResponse.body.pipe(fs.createWriteStream(`./banners/${id}`));
 
-      const uploadResponse = await request("https://api.imgbb.com/1/upload", {
-        query: {
-          key: this.imgbbKey,
-          expiration: 60,
-        },
-        method: "POST",
-        body: form,
-      }).then(({ body }) => body.json());
-
-      return uploadResponse.data.url;
+      return `https://esfalsa.github.io/puree-next/banners/${id}`;
     });
   }
 }
