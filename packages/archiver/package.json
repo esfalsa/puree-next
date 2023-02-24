@@ -1,8 +1,9 @@
 {
   "name": "archiver",
-  "version": "0.0.0",
+  "version": "0.1.0",
   "main": "index.ts",
   "type": "module",
+  "private": true,
   "devDependencies": {
     "@types/fs-extra": "^11.0.1",
     "@types/lodash": "^4.14.191",
