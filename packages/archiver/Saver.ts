@@ -21,7 +21,7 @@ export class RegionSaver extends Writable {
     this.host = options.host;
 
     fs.ensureDirSync("./flags");
-    fs.ensureDirSync("./banners/uploads");
+    fs.ensureDirSync("./banners");
   }
 
   override async _write(
@@ -80,7 +80,7 @@ export class RegionSaver extends Writable {
         ),
         {
           headers: {
-            "user-agent": "Region Archiver/0.1.0 (by: Esfalsa)",
+            "user-agent": this.userAgent,
           },
         }
       );
@@ -101,11 +101,20 @@ export class RegionSaver extends Writable {
     }
 
     return await this.queue.add(async (): Promise<string | null> => {
+      const filename = id.split("/").at(-1);
+
+      if (!filename) {
+        return null;
+      }
+
       const downloadResponse = await request(
-        new URL(id, "https://www.nationstates.net/images/rbanners/"),
+        new URL(
+          filename,
+          "https://www.nationstates.net/images/rbanners/uploads/"
+        ),
         {
           headers: {
-            "user-agent": "Region Archiver/0.1.0 (by: Esfalsa)",
+            "user-agent": this.userAgent,
           },
         }
       );
@@ -114,9 +123,9 @@ export class RegionSaver extends Writable {
         return null;
       }
 
-      downloadResponse.body.pipe(fs.createWriteStream(`./banners/${id}`));
+      downloadResponse.body.pipe(fs.createWriteStream(`./banners/${filename}`));
 
-      return `${this.host}/banners/${id}`;
+      return `${this.host}/banners/${filename}`;
     });
   }
 }
