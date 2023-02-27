@@ -7,6 +7,7 @@ import { request } from "undici";
 export class RegionSaver extends Writable {
   date = Math.floor(Date.now() / 1000); // get Unix time, in seconds
   userAgent: string;
+  host: string;
 
   queue = new PQueue({
     interval: 6000,
@@ -14,9 +15,10 @@ export class RegionSaver extends Writable {
     concurrency: 1,
   });
 
-  constructor(options: WritableOptions & { userAgent: string }) {
+  constructor(options: WritableOptions & { userAgent: string; host: string }) {
     super({ ...options, objectMode: true });
     this.userAgent = options.userAgent;
+    this.host = options.host;
 
     fs.ensureDirSync("./flags");
     fs.ensureDirSync("./banners/uploads");
@@ -66,14 +68,6 @@ export class RegionSaver extends Writable {
           : null,
     };
 
-    // if (newData.flagId && data.flagId !== lastData.flagId) {
-    //   await this.#saveFlag(newData.flagId);
-    // }
-
-    // if (newData.bannerId && data.bannerId !== lastData.bannerId) {
-    //   await this.#saveBanner(newData.bannerId);
-    // }
-
     await fs.outputJSON(filename, [...currentData.slice(-3), newData]);
   }
 
@@ -97,7 +91,7 @@ export class RegionSaver extends Writable {
 
       downloadResponse.body.pipe(fs.createWriteStream(`./flags/${id}`));
 
-      return `https://esfalsa.github.io/puree-next/flags/${id}`;
+      return `${this.host}/flags/${id}`;
     });
   }
 
@@ -122,7 +116,7 @@ export class RegionSaver extends Writable {
 
       downloadResponse.body.pipe(fs.createWriteStream(`./banners/${id}`));
 
-      return `https://esfalsa.github.io/puree-next/banners/${id}`;
+      return `${this.host}/banners/${id}`;
     });
   }
 }

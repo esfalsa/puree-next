@@ -46,7 +46,7 @@ pipeline(
     filter: ({ name, delegateAuth }) =>
       Boolean(delegateAuth?.includes("X") && !passworded.includes(name)),
   }),
-  new RegionSaver({ userAgent }),
+  new RegionSaver({ userAgent, host: "https://esfalsa.github.io/puree-next" }),
   {
     signal: timer.signal,
   }
