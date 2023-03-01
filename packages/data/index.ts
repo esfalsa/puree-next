@@ -6,7 +6,7 @@ import { Parser, RegionSaver } from "archiver";
 const userAgent = "Region Archiver/0.1.0 (by: Esfalsa)";
 
 const { body } = await request(
-  "https://esfalsa.github.io/puree/regions.xml.gz",
+  "https://www.nationstates.net/pages/regions.xml.gz",
   {
     headers: {
       "user-agent": userAgent,
