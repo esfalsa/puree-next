@@ -53,7 +53,6 @@ importers:
     specifiers:
       '@types/node': ^18.14.1
       archiver: workspace:*
-      dotenv: ^16.0.3
       eslint: ^7.32.0
       eslint-config-custom: workspace:*
       tsconfig: workspace:*
@@ -62,7 +61,6 @@ importers:
       undici: ^5.20.0
     dependencies:
       archiver: link:../archiver
-      dotenv: 16.0.3
       undici: 5.20.0
     devDependencies:
       '@types/node': 18.14.1
@@ -1468,11 +1466,6 @@ packages:
     engines: {node: '>=6.0.0'}
     dependencies:
       esutils: 2.0.3
-
-  /dotenv/16.0.3:
-    resolution: {integrity: sha512-7GO6HghkA5fYG9TYnNxi14/7K9f5occMlp3zXAuSxn7CKCxt9xbNWG7yF8hTCSUchlfWSe3uLmlPfigevRItzQ==}
-    engines: {node: '>=12'}
-    dev: false
 
   /dset/3.1.2:
     resolution: {integrity: sha512-g/M9sqy3oHe477Ar4voQxWtaPIFw1jTdKZuomOjhCcBx9nHUNn0pu6NopuFFrTh/TRZIKEj+76vLWFu9BNKk+Q==}
