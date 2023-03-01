@@ -2,9 +2,6 @@ import { pipeline } from "node:stream/promises";
 import { createGunzip } from "node:zlib";
 import { request } from "undici";
 import { Parser, RegionSaver } from "archiver";
-import * as dotenv from "dotenv";
-
-dotenv.config();
 
 const userAgent = "Region Archiver/0.1.0 (by: Esfalsa)";
 
