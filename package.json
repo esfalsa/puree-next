@@ -11,7 +11,8 @@
     "dev": "turbo run dev --parallel",
     "lint": "turbo run lint",
     "format": "prettier --write \"**/*.{ts,tsx,md}\"",
-    "changeset": "changeset"
+    "changeset": "changeset",
+    "version": "changeset version"
   },
   "devDependencies": {
     "eslint-config-custom": "workspace:*",
