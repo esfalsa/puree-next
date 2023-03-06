@@ -14,7 +14,6 @@
   },
   "dependencies": {
     "archiver": "workspace:*",
-    "dotenv": "^16.0.3",
     "undici": "^5.20.0"
   }
 }
